@@ -104,14 +104,16 @@
 @
 .thumb_func
     asm_pe32:
-    //mov r3, 0
-    .loop_pe32:
+    //mov r4, 44
+    //mov r5, 55
+    push	{r4-r5}
+    .loop_pe32:    
         ldr r4, [r0],4      // toma el valor del vector de entrada
         mul r5, r3, r4      // miultiplica el escalaro por el vector de entrada iesimo
         str r5, [r1],4      // alamacena em el vector de salida
         subs r2, 1          // decrementa 
         bne .loop_pe32
-        
+        pop	{r4,r5}
         bx lr       @ vuelve adonde fue llamada (especificamente, si "pc"
                     @ es la direccion, en el codigo del programa, de la
                     @ instruccion "bl asm_sum" usada para saltar a
