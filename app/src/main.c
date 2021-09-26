@@ -35,7 +35,7 @@ static void Suma(void)
 
     // Actividad de debug: SumResult_C y SumResult_Asm deberian contener el
     // mismo valor.
-    __BKPT(0);
+    //__BKPT(0);
 
     (void)SumResult_C;
     (void)SumResult_Asm;
@@ -43,15 +43,15 @@ static void Suma(void)
 
 static void Suma64(void)
 {
-    const uint64_t A = 20;
-    const uint64_t B = 30;
+    const uint64_t A = (uint32_t) -1;
+    const uint64_t B = (uint32_t) -2;
 
     const uint64_t SumResult_C = c_sum64(A, B);
     const uint64_t SumResult_Asm = asm_sum64(A, B);
 
     // Actividad de debug: SumResult_C y SumResult_Asm deberian contener el
     // mismo valor.
-    __BKPT(0);
+    //__BKPT(0);
 
     (void)SumResult_C;
     (void)SumResult_Asm;
@@ -71,7 +71,7 @@ static void Zeros(void)
 static void pe32(void)
 {
     uint32_t vectorA[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    uint32_t vectorB[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint32_t vectorB[10] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
     uint32_t *pvectorA = vectorA;
     uint32_t *pvectorB = vectorB;
     uint32_t escalar = 10;
