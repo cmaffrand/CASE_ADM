@@ -7,6 +7,7 @@
 .global asm_sum64
 .global asm_zeros
 .global asm_pe32
+.global asm_pe16
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -81,12 +82,44 @@ asm_pe32:
     .loop_pe32:
         ldr r4, [r0],4  @ Toma el valor del vector de entrada
         mul r4, r3, r4  @ Multiplica el escalar por el vector de entrada iesimo
-        str r4, [r1],4  @ Alamacena em el vector de salida
+        str r4, [r1],4  @ Alamacena en el vector de salida
         subs r2, 1      @ Decrementa el contador 
         bne .loop_pe32  @ Vuelve a .loop_pe32 cuando Z es ditinto de cero
     pop	{r4}            @ Devuelve el contexto
     bx lr               @ Vuelve adonde fue llamada
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_pe16 (uint16_t * vectorIn,  uint16_t * vectorOut, uint32_t longitud, 
+@   uint16_t escalar)
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: * vectorOut
+@   r2: longitud
+@   r3: escalar
+@ Parametros de función
+@   r4: Variable intermedia para cargar el valor de vectorIn y multiplicar
+@
+.thumb_func
+asm_pe16:
+    push {r4}           @ Guarda el contexto de R4
+    mov r4, r2          
+    mov r2, r2, ASR 1   @ divides value by 2
+    ands r4, #0x1
+    beq .loop_pe16
+    ldr r4, [r0],2  	@ Toma el valor del vector de entrada
+    mul r4, r3, r4  	@ Multiplica el escalar por el vector de entrada iesimo
+    str r4, [r1],2  	@ Alamacena en el vector de salida
+    .loop_pe16:
+        ldr r4, [r0],4  @ Toma el valor del vector de entrada
+        mul r4, r3, r4  @ Multiplica el escalar por el vector de entrada iesimo
+        str r4, [r1],4  @ Alamacena en el vector de salida
+        subs r2, 1      @ Decrementa el contador 
+        bne .loop_pe16  @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
+    pop	{r4}            @ Devuelve el contexto
+    bx lr               @ Vuelve adonde fue llamada
+    
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
 @   void asm_svc (void)
