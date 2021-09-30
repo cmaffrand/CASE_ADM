@@ -104,17 +104,10 @@ asm_pe32:
 .thumb_func
 asm_pe16:
     push {r4}           @ Guarda el contexto de R4
-    mov r4, r2          
-    mov r2, r2, ASR 1   @ divides value by 2
-    ands r4, #0x1
-    beq .loop_pe16
-    ldr r4, [r0],2  	@ Toma el valor del vector de entrada
-    mul r4, r3, r4  	@ Multiplica el escalar por el vector de entrada iesimo
-    str r4, [r1],2  	@ Alamacena en el vector de salida
     .loop_pe16:
-        ldr r4, [r0],4  @ Toma el valor del vector de entrada
+        ldrh r4, [r0],2 @ Toma el valor del vector de entrada
         mul r4, r3, r4  @ Multiplica el escalar por el vector de entrada iesimo
-        str r4, [r1],4  @ Alamacena en el vector de salida
+        strh r4, [r1],2 @ Alamacena en el vector de salida
         subs r2, 1      @ Decrementa el contador 
         bne .loop_pe16  @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
     pop	{r4}            @ Devuelve el contexto

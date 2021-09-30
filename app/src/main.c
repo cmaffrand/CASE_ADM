@@ -75,19 +75,25 @@ static void pe32(void)
     uint32_t *pvectorA = vectorA;
     uint32_t *pvectorB = vectorB;
     uint32_t escalar = 10;
+    uint32_t vectorcA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint32_t vectorcB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    uint32_t *pvectorcA = vectorcA;
+    uint32_t *pvectorcB = vectorcB;
 
+    c_pe32(pvectorcA, pvectorcB, sizeof(vectorcA) / sizeof(uint32_t), escalar);
     asm_pe32(pvectorA, pvectorB, sizeof(vectorA) / sizeof(uint32_t), escalar);
 }
 
 static void pe16(void)
 {
-    uint16_t vectorA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    uint16_t vectorB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-    uint16_t *pvectorA = vectorA;
-    uint16_t *pvectorB = vectorB;
+    uint16_t asmA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint16_t asmB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
     uint32_t escalar = 10;
-
-    asm_pe16(pvectorA, pvectorB, sizeof(vectorA) / sizeof(uint16_t), escalar);
+    uint16_t cA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint16_t cB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    
+    c_pe16(cA, cB, sizeof(cA) / sizeof(uint16_t), escalar);
+    asm_pe16(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
 }
 
 static void LlamandoAMalloc(void)

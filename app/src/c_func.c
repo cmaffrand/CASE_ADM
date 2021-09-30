@@ -17,3 +17,19 @@ void zeros(uint32_t *vector, uint32_t longitud)
         vector[i] = 0;
     }
 }
+
+void c_pe32(uint32_t *vectorA, uint32_t *vectorB, uint32_t longitud, uint32_t escalar)
+{
+    for (uint32_t i = 0; i < longitud; i++)
+    {
+        vectorB[i] = vectorA[i]*escalar;
+    }
+}
+
+void c_pe16(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t escalar)
+{
+    for (uint32_t i = 0; i < longitud; i++)
+    {
+        vectorB[i] = vectorA[i]*escalar;
+    }
+}
