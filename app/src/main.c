@@ -96,6 +96,18 @@ static void pe16(void)
     asm_pe16(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
 }
 
+static void pe16_sat12(void)
+{
+    uint16_t asmA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint16_t asmB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    uint32_t escalar = 1000;
+    uint16_t cA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    uint16_t cB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    
+    c_pe16_sat12(cA, cB, sizeof(cA) / sizeof(uint16_t), escalar);
+    asm_pe16_sat12(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
+}
+
 static void LlamandoAMalloc(void)
 {
     // De donde saca memoria malloc?
@@ -189,20 +201,15 @@ noreturn void LoopInfinito(void)
 int main(void)
 {
     Inicio();
-
     Suma();
-
     Suma64();
-
     Zeros();
-
     pe32();
-
     pe16();
 
+    pe16_sat12();
+
     PrivilegiosSVC();
-
     LlamandoAMalloc();
-
     LoopInfinito();
 }

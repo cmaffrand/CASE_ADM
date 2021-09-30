@@ -8,6 +8,7 @@
 .global asm_zeros
 .global asm_pe32
 .global asm_pe16
+.global asm_pe16_sat12
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -112,6 +113,37 @@ asm_pe16:
         bne .loop_pe16  @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
     pop	{r4}            @ Devuelve el contexto
     bx lr               @ Vuelve adonde fue llamada
+    
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_pe16_sat12 (uint16_t * vectorIn,  uint16_t * vectorOut, uint32_t longitud, 
+@   uint16_t escalar)
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: * vectorOut
+@   r2: longitud
+@   r3: escalar
+@ Parametros de función
+@   r4: Variable intermedia para cargar el valor de vectorIn y multiplicar
+@
+.thumb_func
+asm_pe16_sat12:
+    push {r4-r6}                @ Guarda el contexto
+    mov r6, #0xFF0
+    orr r6, r6, #0xF             @ R6 = 0xFFF (en dos intrucciones)
+    .loop_pe16_sat12:
+        ldrh r4, [r0],2         @ Toma el valor del vector de entrada
+        mul r4, r3, r4          @ Multiplica el escalar por el vector de entrada iesimo
+        ands r5, r4, #0xF000
+        beq .loop_pe16_load
+        mov r4, r6 
+        .loop_pe16_load:
+        strh r4, [r1],2         @ Alamacena en el vector de salida
+        subs r2, 1              @ Decrementa el contador 
+        bne .loop_pe16_sat12    @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
+    pop	{r4-r6}                 @ Devuelve el contexto
+    bx lr                       @ Vuelve adonde fue llamada
     
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":

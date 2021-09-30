@@ -33,3 +33,12 @@ void c_pe16(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t es
         vectorB[i] = vectorA[i]*escalar;
     }
 }
+
+void c_pe16_sat12(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t escalar)
+{
+    for (uint32_t i = 0; i < longitud; i++)
+    {
+        vectorB[i] = vectorA[i]*escalar;
+        if (vectorB[i] > 0xFFF) vectorB[i] = 0xFFF;
+    }
+}
