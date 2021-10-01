@@ -129,20 +129,18 @@ asm_pe16:
 @
 .thumb_func
 asm_pe16_sat12:
-    push {r4-r6}                @ Guarda el contexto
-    mov r6, #0xFF0
-    orr r6, r6, #0xF             @ R6 = 0xFFF (en dos intrucciones)
+    push {r4-r5}                @ Guarda el contexto
     .loop_pe16_sat12:
         ldrh r4, [r0],2         @ Toma el valor del vector de entrada
         mul r4, r3, r4          @ Multiplica el escalar por el vector de entrada iesimo
         ands r5, r4, #0xF000
         beq .loop_pe16_load
-        mov r4, r6 
+        movw r4, 0xFFF 
         .loop_pe16_load:
         strh r4, [r1],2         @ Alamacena en el vector de salida
         subs r2, 1              @ Decrementa el contador 
         bne .loop_pe16_sat12    @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
-    pop	{r4-r6}                 @ Devuelve el contexto
+    pop	{r4-r5}                 @ Devuelve el contexto
     bx lr                       @ Vuelve adonde fue llamada
     
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
