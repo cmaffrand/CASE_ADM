@@ -9,6 +9,7 @@
 .global asm_pe32
 .global asm_pe16
 .global asm_pe16_sat12
+.global asm_pe16_usat12
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -126,6 +127,7 @@ asm_pe16:
 @   r3: escalar
 @ Parametros de función
 @   r4: Variable intermedia para cargar el valor de vectorIn y multiplicar
+@   r5: Variable intermedia para calcular el and y obtener información sobre saturacion
 @
 .thumb_func
 asm_pe16_sat12:
@@ -141,6 +143,32 @@ asm_pe16_sat12:
         subs r2, 1              @ Decrementa el contador 
         bne .loop_pe16_sat12    @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
     pop	{r4-r5}                 @ Devuelve el contexto
+    bx lr                       @ Vuelve adonde fue llamada
+    
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_pe16_sat12 (uint16_t * vectorIn,  uint16_t * vectorOut, uint32_t longitud, 
+@   uint16_t escalar)
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: * vectorOut
+@   r2: longitud
+@   r3: escalar
+@ Parametros de función
+@   r4: Variable intermedia para cargar el valor de vectorIn y multiplicar
+@
+.thumb_func
+asm_pe16_usat12:
+    push {r4}                @ Guarda el contexto
+    .loop_pe16_usat12:
+        ldrh r4, [r0],2         @ Toma el valor del vector de entrada
+        mul r4, r3, r4          @ Multiplica el escalar por el vector de entrada iesimo
+        usat r4, 12, r4
+        strh r4, [r1],2         @ Alamacena en el vector de salida
+        subs r2, 1              @ Decrementa el contador 
+        bne .loop_pe16_usat12    @ Vuelve a .loop_pe16 cuando Z es ditinto de cero
+    pop	{r4}                 @ Devuelve el contexto
     bx lr                       @ Vuelve adonde fue llamada
     
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

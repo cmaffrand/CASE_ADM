@@ -9,6 +9,15 @@
 // del SYSTICK.
 static volatile uint32_t s_ticks = 0;
 
+#define DWT_CONTROL             (*((volatile uint32_t*)0xE0001000))
+#define DWT_CYCCNT              (*((volatile uint32_t*)0xE0001004))
+#define DWT_CYCCNTENA_BIT       (1UL<<0)
+
+#define EnableCycleCounter()    DWT_CONTROL |= DWT_CYCCNTENA_BIT
+#define GetCycleCounter()       DWT_CYCCNT
+#define ResetCycleCounter()     DWT_CYCCNT = 0
+#define DisableCycleCounter()   DWT_CONTROL &= ~DWT_CYCCNTENA_BIT
+
 // Inicia soporte de la placa y periodo de la interrupcion del SYSTICK
 // cada 1 milisegundo.
 static void Inicio(void)
@@ -16,6 +25,15 @@ static void Inicio(void)
     Board_Init();
     SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / 1000);
+
+    //Contadores de ciclos
+    uint32_t * H_DWT_DEMCR	 = (uint32_t *)0xE000EDFC;
+    uint32_t * H_DWT_CTRL	 = (uint32_t *)0xE0001000;
+
+    // bit24[TRCENA]   = habilita todos los DWT
+    *H_DWT_DEMCR |= 1<<24;
+    // bit0[CYCCNTENA] =  enable CYCCNT
+    *H_DWT_CTRL |= 1;
 }
 
 // Segun la configuracion realizada en Inicio(), este handler de interrupcion
@@ -100,12 +118,24 @@ static void pe16_sat12(void)
 {
     uint16_t asmA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     uint16_t asmB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-    uint32_t escalar = 1000;
+    uint32_t escalar = 0xFFFF;
     uint16_t cA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     uint16_t cB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    uint32_t cycles_c,cycles_asm,cycles_asm_usat;
+
     
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
     c_pe16_sat12(cA, cB, sizeof(cA) / sizeof(uint16_t), escalar);
+    cycles_c = GetCycleCounter();
+
+    ResetCycleCounter();
     asm_pe16_sat12(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
+    cycles_asm = GetCycleCounter();
+
+    ResetCycleCounter();
+    asm_pe16_usat12(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
+    cycles_asm_usat = GetCycleCounter();
 }
 
 static void LlamandoAMalloc(void)
