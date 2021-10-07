@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 #include <stdnoreturn.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
@@ -34,6 +36,8 @@ static void Inicio(void)
     *H_DWT_DEMCR |= 1<<24;
     // bit0[CYCCNTENA] =  enable CYCCNT
     *H_DWT_CTRL |= 1;
+
+    Board_Debug_Init();
 }
 
 // Segun la configuracion realizada en Inicio(), este handler de interrupcion
@@ -118,24 +122,37 @@ static void pe16_sat12(void)
 {
     uint16_t asmA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     uint16_t asmB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-    uint32_t escalar = 0xFFFF;
+    uint32_t escalar = 0xFFF;
     uint16_t cA[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     uint16_t cB[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
     uint32_t cycles_c,cycles_asm,cycles_asm_usat;
+    char strNumber [10];
 
     
     // carga el contador de ciclos en 0
     ResetCycleCounter();
     c_pe16_sat12(cA, cB, sizeof(cA) / sizeof(uint16_t), escalar);
     cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
 
     ResetCycleCounter();
     asm_pe16_sat12(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
     cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+	Board_UARTPutSTR("\r\n");
 
     ResetCycleCounter();
     asm_pe16_usat12(asmA, asmB, sizeof(asmA) / sizeof(uint16_t), escalar);
     cycles_asm_usat = GetCycleCounter();
+    itoa(cycles_asm_usat,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm_sat: ");
+    Board_UARTPutSTR(strNumber);
+	Board_UARTPutSTR("\r\n");
 }
 
 static void LlamandoAMalloc(void)
