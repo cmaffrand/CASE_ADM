@@ -128,7 +128,7 @@ static void pe16_sat12(void)
     uint32_t cycles_c,cycles_asm,cycles_asm_usat;
     char strNumber [10];
 
-    
+    Board_UARTPutSTR("Ejercicio 4: pe16_sat12\r\n");
     // carga el contador de ciclos en 0
     ResetCycleCounter();
     c_pe16_sat12(cA, cB, sizeof(cA) / sizeof(uint16_t), escalar);
@@ -153,6 +153,44 @@ static void pe16_sat12(void)
     Board_UARTPutSTR("Ciclos en asm_sat: ");
     Board_UARTPutSTR(strNumber);
 	Board_UARTPutSTR("\r\n");
+}
+
+static void filtroVentana10(void)
+{
+    uint16_t asmIn[1000];
+    uint16_t asmOut[1000];
+    uint16_t cIn[1000];
+    uint16_t cOut[1000];
+    uint32_t cycles_c,cycles_asm;
+    char strNumber [10];
+
+    Board_UARTPutSTR("Ejercicio 5: filtroVentana10\r\n");
+
+    // init vectors
+    for (uint32_t i = 0; i < sizeof(asmIn) / sizeof(asmIn[0]); i++)
+    {
+        asmIn[i] = i;
+        cIn[i] = i;
+    }
+    
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    c_filtroVentana10(cIn, cOut, sizeof(cIn) / sizeof(cIn[0]));
+    cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    asm_filtroVentana10(asmIn, asmOut, sizeof(asmIn) / sizeof(asmIn[0]));
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
 }
 
 static void LlamandoAMalloc(void)
@@ -253,8 +291,8 @@ int main(void)
     Zeros();
     pe32();
     pe16();
-
     pe16_sat12();
+    filtroVentana10();
 
     PrivilegiosSVC();
     LlamandoAMalloc();

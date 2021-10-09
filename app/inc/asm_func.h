@@ -9,4 +9,5 @@ extern void asm_pe32(uint32_t *vectorA, uint32_t *vectorB, uint32_t longitud, ui
 extern void asm_pe16(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t escalar);
 extern void asm_pe16_sat12(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t escalar);
 extern void asm_pe16_usat12(uint16_t *vectorA, uint16_t *vectorB, uint32_t longitud, uint16_t escalar);
+extern void asm_filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitudVectorIn);
 extern void asm_svc(void);
