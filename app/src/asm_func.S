@@ -229,9 +229,9 @@ asm_filtroVentana10:
 @
 .thumb_func
 asm_pack32to16:
+    add r0, 2
     .loop_pack32to16:       
-        ldr r3, [r0],4          @ Toma el valor del vector de entrada
-        lsr r3, 16              @ shift r3
+        ldrh r3, [r0],4         @ Toma el valor del vector de entrada
         strh r3, [r1],2         @ Alamacena en el vector de salida
         subs r2, 1              @ Decrementa el contador 
         bne .loop_pack32to16    @ Vuelve a .loop_pack32to16 cuando Z es ditinto de cero

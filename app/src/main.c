@@ -204,9 +204,8 @@ static void filtroVentana10(void)
 
 static void pack32to16(void)
 {
-    int32_t asmIn[1000];
+    int32_t vIn[1000];
     int16_t asmOut[1000];
-    int32_t cIn[1000];
     int16_t cOut[1000];
     uint32_t cycles_c,cycles_asm;
     char strNumber [10];
@@ -215,16 +214,15 @@ static void pack32to16(void)
     Board_UARTPutSTR("Ejercicio 6: pack32to16\r\n");
 
     // init vectors
-    for (uint32_t i = 0; i < sizeof(asmIn) / sizeof(asmIn[0]); i++)
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
     {
-        asmIn[i] = i*toggle;
-        cIn[i] = i*toggle;
+        vIn[i] = i*toggle;
         toggle = -1*toggle;
     }
     
     // carga el contador de ciclos en 0
     ResetCycleCounter();
-    c_pack32to16(cIn, cOut, sizeof(cIn) / sizeof(cIn[0]));
+    c_pack32to16(vIn, cOut, sizeof(vIn) / sizeof(vIn[0]));
     cycles_c = GetCycleCounter();
     itoa(cycles_c,strNumber,10);
     Board_UARTPutSTR("Ciclos en c: ");
@@ -233,7 +231,7 @@ static void pack32to16(void)
 
     // carga el contador de ciclos en 0
     ResetCycleCounter();
-    asm_pack32to16(asmIn, asmOut, sizeof(asmIn) / sizeof(asmIn[0]));
+    asm_pack32to16(vIn, asmOut, sizeof(vIn) / sizeof(vIn[0]));
     cycles_asm = GetCycleCounter();
     itoa(cycles_asm,strNumber,10);
     Board_UARTPutSTR("Ciclos en asm: ");
