@@ -13,6 +13,7 @@
 .global asm_filtroVentana10
 .global asm_pack32to16
 .global asm_max
+.global asm_invertir
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -268,7 +269,35 @@ asm_max:
     sub r0, r5, r3              @ Asigna en r0 la posicion
     pop	{r4-r5}                 @ Devuelve el contexto
     bx lr                       @ Vuelve adonde fue llamada
-    
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_invertir(uint16_t *vectorIn, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: longitud
+@ Parametros de función
+@   r2: direccion a intercambiar
+@
+.thumb_func
+asm_invertir:
+    push {r4}                   @ Guarda el contexto
+    mov r2, 2                   @ asigno largo de palabra "2"
+    mul r2, r1                  @ largo en bytes del vector
+    add r2, r0                  @ calcula la direccion final del vector
+    sub r2, 2                   @ calcula direccion del ultimo elemento del vector
+    lsr r1, 1                   @ divide por 2
+    .loop_invertir:       
+        ldrh r3, [r0]           @ Toma el valor del vector de entrada bajo
+        ldrh r4, [r2]           @ Toma el valor del vector de entrada alto
+        strh r4, [r0],2         @ Alamacena en el vector de salida bajo
+        strh r3, [r2],-2        @ Alamacena en el vector de salida alto
+        subs r1, 1              @ Decrementa el contador 
+        bne .loop_invertir      @ Vuelve a .loop_invertir cuando Z es ditinto de cero
+    pop	{r4}                    @ Devuelve el contexto
+    bx lr                       @ Vuelve adonde fue llamada
+
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
 @   void asm_svc (void)

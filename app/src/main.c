@@ -278,6 +278,38 @@ static void max(void)
     Board_UARTPutSTR("\r\n");
 }
 
+static void invertir(void)
+{
+    uint16_t vIn[1000];
+    uint32_t cycles_c,cycles_asm;
+    char strNumber [10];
+    int32_t toggle = 10000;
+
+    Board_UARTPutSTR("Ejercicio 9: invertir\r\n");
+
+    // init vectors
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++) 
+        vIn[i] = i;
+    
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    c_invertir(vIn, sizeof(vIn) / sizeof(vIn[0]));
+    cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    asm_invertir(vIn, sizeof(vIn) / sizeof(vIn[0]));
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+}
+
 static void LlamandoAMalloc(void)
 {
     // De donde saca memoria malloc?
@@ -380,6 +412,7 @@ int main(void)
     filtroVentana10();
     pack32to16();
     max();
+    invertir();
 
     PrivilegiosSVC();
     LlamandoAMalloc();
