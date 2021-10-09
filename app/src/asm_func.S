@@ -11,6 +11,8 @@
 .global asm_pe16_sat12
 .global asm_pe16_usat12
 .global asm_filtroVentana10
+.global asm_pack32to16
+.global asm_max
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -214,7 +216,60 @@ asm_filtroVentana10:
     pop	{r4-r6}                 @ Devuelve el contexto
     bx lr                       @ Vuelve adonde fue llamada
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_pack32to16(int32_t* vectorIn, int16_t * vectorOut, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: * vectorOut
+@   r2: longitud
+@ Parametros de función
+@   r3: Variable intermedia para cargar el valor de vectorIn y shift
+@
+.thumb_func
+asm_pack32to16:
+    .loop_pack32to16:       
+        ldr r3, [r0],4          @ Toma el valor del vector de entrada
+        lsr r3, 16              @ shift r3
+        strh r3, [r1],2         @ Alamacena en el vector de salida
+        subs r2, 1              @ Decrementa el contador 
+        bne .loop_pack32to16    @ Vuelve a .loop_pack32to16 cuando Z es ditinto de cero
+    bx lr                       @ Vuelve adonde fue llamada
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   int32_t asm_max(int32_t* vectorIn, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vectorIn
+@   r1: longitud
+@ Parametros de función
+@   r2: variable intermedia maximo
+@   r3: variable intermedia posicion maximo
+@ Parametros de Salida
+@   r0: posicion del valor maximo en el vector de entada.
+@
+.thumb_func
+asm_max:
+    push {r4-r5}                @ Guarda el contexto
+    mov r5, r1                  @ constante del largo del vector
+    mov r3, r1                  @ posicion del maximo
+    ldr r4, [r0],4              @ valor minimo representado
+    sub r1, 1                   @ Decrementa el contador 
+    .loop_max:       
+        ldr r2, [r0],4          @ Toma el valor del vector de entrada
+        cmp r4, r2              @ Compara r4 con r2 
+        bge .no_max             @ Signed Greater Than or Equal
+        mov r3, r1              @ guarda la posicion invertida del maximo
+        mov r4, r2              @ guarda el maximo
+        .no_max:
+        subs r1, 1              @ Decrementa el contador 
+        bne .loop_max           @ Vuelve a .loop_max cuando Z es ditinto de cero
+    sub r0, r5, r3              @ Asigna en r0 la posicion
+    pop	{r4-r5}                 @ Devuelve el contexto
+    bx lr                       @ Vuelve adonde fue llamada
+    
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
 @   void asm_svc (void)
 @

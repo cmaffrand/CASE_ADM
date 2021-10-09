@@ -184,6 +184,15 @@ static void filtroVentana10(void)
 
     // carga el contador de ciclos en 0
     ResetCycleCounter();
+    asm_filtroVentana10_unfolded(asmIn, asmOut, sizeof(asmIn) / sizeof(asmIn[0]));
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm unfolded: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
     asm_filtroVentana10(asmIn, asmOut, sizeof(asmIn) / sizeof(asmIn[0]));
     cycles_asm = GetCycleCounter();
     itoa(cycles_asm,strNumber,10);
@@ -191,6 +200,82 @@ static void filtroVentana10(void)
     Board_UARTPutSTR(strNumber);
     Board_UARTPutSTR("\r\n");
 
+}
+
+static void pack32to16(void)
+{
+    int32_t asmIn[1000];
+    int16_t asmOut[1000];
+    int32_t cIn[1000];
+    int16_t cOut[1000];
+    uint32_t cycles_c,cycles_asm;
+    char strNumber [10];
+    int32_t toggle = 10000;
+
+    Board_UARTPutSTR("Ejercicio 6: pack32to16\r\n");
+
+    // init vectors
+    for (uint32_t i = 0; i < sizeof(asmIn) / sizeof(asmIn[0]); i++)
+    {
+        asmIn[i] = i*toggle;
+        cIn[i] = i*toggle;
+        toggle = -1*toggle;
+    }
+    
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    c_pack32to16(cIn, cOut, sizeof(cIn) / sizeof(cIn[0]));
+    cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    asm_pack32to16(asmIn, asmOut, sizeof(asmIn) / sizeof(asmIn[0]));
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+}
+
+static void max(void)
+{
+    int32_t vIn[1000];
+    int32_t max;
+    uint32_t cycles_c,cycles_asm;
+    char strNumber [10];
+    int32_t toggle = 10000;
+
+    Board_UARTPutSTR("Ejercicio 7: max\r\n");
+
+    // init vectors
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
+    {
+        vIn[i] = i*toggle;
+        toggle = -1*toggle;
+    }
+    
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    max = c_max(vIn, sizeof(vIn) / sizeof(vIn[0]));
+    cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    max = asm_max(vIn, sizeof(vIn) / sizeof(vIn[0]));
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
 }
 
 static void LlamandoAMalloc(void)
@@ -293,6 +378,8 @@ int main(void)
     pe16();
     pe16_sat12();
     filtroVentana10();
+    pack32to16();
+    max();
 
     PrivilegiosSVC();
     LlamandoAMalloc();

@@ -56,3 +56,28 @@ void c_filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitu
         vectorOut[i] = acc / 10;
     }
 }
+
+void c_pack32to16(int32_t *vectorIn, int16_t *vectorOut, uint32_t longitud)
+{
+    for (uint32_t i = 0; i < longitud; i++)
+    {
+        vectorOut[i] = (vectorIn[i] >> 16);
+    }
+}
+
+int32_t c_max(int32_t *vectorIn, uint32_t longitud)
+{
+    int32_t max = vectorIn[0];
+    int32_t pos = 0;
+
+    for (uint32_t i = 1; i < longitud; i++)
+    {
+        if (max < vectorIn[i])
+        {
+            max = vectorIn[i];
+            pos = i;
+        }
+    }
+
+    return pos;
+}
