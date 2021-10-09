@@ -1,3 +1,10 @@
+.syntax unified
+.thumb
+.text
+
+@ Simbolos exportados
+.global asm_filtroVentana10_unfolded
+
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
 @   void asm_filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t 
@@ -14,7 +21,7 @@
 @   r6: constante 10 para dividir
 @
 .thumb_func
-asm_filtroVentana10:
+asm_filtroVentana10_unfolded:
     push {r4-r6}                @ Guarda el contexto
     mov r3, 0                   @ r3 va a ser el accumulador se pone en cero
     mov r5, 10                  @ contador de muestras para parte inical
