@@ -94,3 +94,11 @@ void c_invertir(uint16_t *vectorIn, uint32_t longitud)
         vectorIn[i] = vectorAux[longitud - 1 - i];
     }
 }
+
+void c_echo(int16_t* dato)
+{
+    for (uint32_t i = 4095; i > 882; i--)
+    {
+       dato[i]=dato[i]-dato[i-882];
+    }
+}
