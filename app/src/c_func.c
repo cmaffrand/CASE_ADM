@@ -99,6 +99,6 @@ void c_echo(int16_t* dato)
 {
     for (uint32_t i = 4095; i > 882; i--)
     {
-       dato[i]=dato[i]-dato[i-882];
+       dato[i]=dato[i]-dato[i-882]/2;
     }
 }

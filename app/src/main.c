@@ -308,6 +308,60 @@ static void invertir(void)
     Board_UARTPutSTR("\r\n");
 }
 
+static void echo(void)
+{
+    int16_t vIn[4096];
+    uint32_t cycles_c,cycles_asm;
+    char strNumber [10];
+    int32_t toggle = 100;
+
+    Board_UARTPutSTR("Ejercicio 10: echo\r\n");
+
+    // init vectors
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
+    {
+        vIn[i] = i*toggle;
+        toggle = -1*toggle;
+    }
+    
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    c_echo(vIn);
+    cycles_c = GetCycleCounter();
+    itoa(cycles_c,strNumber,10);
+    Board_UARTPutSTR("Ciclos en c: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
+    {
+        vIn[i] = i*toggle;
+        toggle = -1*toggle;
+    }
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    asm_echo(vIn);
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+
+    for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
+    {
+        vIn[i] = i*toggle;
+        toggle = -1*toggle;
+    }
+    // carga el contador de ciclos en 0
+    ResetCycleCounter();
+    asm_echo_sind(vIn);
+    cycles_asm = GetCycleCounter();
+    itoa(cycles_asm,strNumber,10);
+    Board_UARTPutSTR("Ciclos en asm sind: ");
+    Board_UARTPutSTR(strNumber);
+    Board_UARTPutSTR("\r\n");
+}
+
 static void LlamandoAMalloc(void)
 {
     // De donde saca memoria malloc?
@@ -411,6 +465,7 @@ int main(void)
     pack32to16();
     max();
     invertir();
+    echo();
 
     PrivilegiosSVC();
     LlamandoAMalloc();

@@ -300,6 +300,57 @@ asm_invertir:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
+@   void asm_echo(int16_t* dato);
+@
+@ Parametros recibidos:
+@   r0: * dato
+@ Parametros de función
+@   r2: direccion a intercambiar
+@
+.thumb_func
+asm_echo:
+    mov r1, #8192               @ asigno largo del vector en bytes
+    add r0, r0, r1              @ calcula la direccion final del vector
+    sub r0, 2                   @ calcula direccion del ultimo elemento del vector
+    sub r1, #1764               @ resta antes de iterar los 882 palabras
+    .loop_echo:       
+        ldrh r1, [r0]           @ Toma el valor del vector de entrada
+        ldrh r2, [r0,-882]      @ Toma el valor del vector de entrada alto
+        lsr r2, 1               @ divide por dos
+        add r3, r2, r1          @ Suma
+        strh r3, [r0],-2        @ Alamacena en el vector de salida
+        subs r1, 2              @ Decrementa el contador 
+        bne .loop_echo          @ Vuelve a .loop_invertir cuando Z es ditinto de cero
+    bx lr                       @ Vuelve adonde fue llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_echo_sind(int16_t* dato);
+@
+@ Parametros recibidos:
+@   r0: * dato
+@ Parametros de función
+@   r2: direccion a intercambiar
+@
+.thumb_func
+asm_echo:
+    mov r1, #8192               @ asigno largo del vector en bytes
+    add r0, r0, r1              @ calcula la direccion final del vector
+    sub r0, 4                   @ calcula direccion del ultimo elemento del vector
+    sub r1, #1764               @ resta antes de iterar los 882 palabras
+    mov r4, 0
+    .loop_echo:       
+        ldr r2, [r0]            @ Toma el valor del vector de entrada
+        ldr r3, [r0,-882]       @ Toma el valor del vector de entrada alto
+        shadd16 r3, r4          @ divide por dos r3
+        shadd16 r5, r3, r2      @ Suma con promedio
+        str r5, [r0],-2         @ Alamacena en el vector de salida
+        subs r1, 2              @ Decrementa el contador 
+        bne .loop_echo          @ Vuelve a .loop_invertir cuando Z es ditinto de cero
+    bx lr  
+    
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
 @   void asm_svc (void)
 @
 .thumb_func
