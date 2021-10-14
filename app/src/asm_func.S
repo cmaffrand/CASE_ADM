@@ -14,6 +14,8 @@
 .global asm_pack32to16
 .global asm_max
 .global asm_invertir
+.global asm_echo
+.global asm_echo_sind
 .global asm_svc
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -309,19 +311,24 @@ asm_invertir:
 @
 .thumb_func
 asm_echo:
+    push {r4}                   @ Guarda el contexto
     mov r1, #8192               @ asigno largo del vector en bytes
     add r0, r0, r1              @ calcula la direccion final del vector
     sub r0, 2                   @ calcula direccion del ultimo elemento del vector
     sub r1, #1764               @ resta antes de iterar los 882 palabras
+    movw r2, #1762              @
+    sub r4, r0, r2              @ posicion del eco que se asigna a la muestra final
     .loop_echo:       
-        ldrh r1, [r0]           @ Toma el valor del vector de entrada
-        ldrh r2, [r0,-882]      @ Toma el valor del vector de entrada alto
-        lsr r2, 1               @ divide por dos
-        add r3, r2, r1          @ Suma
-        strh r3, [r0],-2        @ Alamacena en el vector de salida
+        ldrh r2, [r0]           @ Toma el valor del vector de entrada
+        ldrh r3, [r4],-2        @ Toma el valor del vector de entrada alto
+        lsr r3, 1               @ divide por dos
+        add r2, r3              @ Suma
+        strh r2, [r0],-2        @ Alamacena en el vector de salida
         subs r1, 2              @ Decrementa el contador 
         bne .loop_echo          @ Vuelve a .loop_invertir cuando Z es ditinto de cero
+    pop	{r4}                    @ Devuelve el contexto
     bx lr                       @ Vuelve adonde fue llamada
+
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -333,20 +340,24 @@ asm_echo:
 @   r2: direccion a intercambiar
 @
 .thumb_func
-asm_echo:
+asm_echo_sind:
+    push {r4-r6}                @ Guarda el contexto
     mov r1, #8192               @ asigno largo del vector en bytes
     add r0, r0, r1              @ calcula la direccion final del vector
     sub r0, 4                   @ calcula direccion del ultimo elemento del vector
     sub r1, #1764               @ resta antes de iterar los 882 palabras
     mov r4, 0
-    .loop_echo:       
+    movw r2, #1762               @
+    sub r5, r0, r2              @ posicion del eco que se asigna a la muestra final
+    .loop_echo_sind:       
         ldr r2, [r0]            @ Toma el valor del vector de entrada
-        ldr r3, [r0,-882]       @ Toma el valor del vector de entrada alto
-        shadd16 r3, r4          @ divide por dos r3
-        shadd16 r5, r3, r2      @ Suma con promedio
-        str r5, [r0],-2         @ Alamacena en el vector de salida
+        ldr r3, [r5],-2         @ Toma el valor del vector de entrada alto
+        shadd16 r3, r3, r4      @ divide por dos r3
+        shadd16 r6, r3, r2      @ Suma con promedio
+        str r6, [r0],-2         @ Alamacena en el vector de salida
         subs r1, 2              @ Decrementa el contador 
         bne .loop_echo          @ Vuelve a .loop_invertir cuando Z es ditinto de cero
+    pop	{r4-r6}                 @ Devuelve el contexto
     bx lr  
     
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
