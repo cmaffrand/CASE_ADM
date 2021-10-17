@@ -313,15 +313,13 @@ static void echo(void)
     int16_t vIn[4096];
     uint32_t cycles_c,cycles_asm;
     char strNumber [10];
-    int32_t toggle = 100;
 
     Board_UARTPutSTR("Ejercicio 10: echo\r\n");
 
     // init vectors
     for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
     {
-        vIn[i] = i*toggle;
-        toggle = -1*toggle;
+        vIn[i] = i;
     }
     
     // carga el contador de ciclos en 0
@@ -335,8 +333,7 @@ static void echo(void)
 
     for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
     {
-        vIn[i] = i*toggle;
-        toggle = -1*toggle;
+        vIn[i] = i;
     }
     // carga el contador de ciclos en 0
     ResetCycleCounter();
@@ -349,8 +346,7 @@ static void echo(void)
 
     for (uint32_t i = 0; i < sizeof(vIn) / sizeof(vIn[0]); i++)
     {
-        vIn[i] = i*toggle;
-        toggle = -1*toggle;
+        vIn[i] = i;
     }
     // carga el contador de ciclos en 0
     ResetCycleCounter();

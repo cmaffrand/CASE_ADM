@@ -347,7 +347,7 @@ asm_echo_sind:
     sub r0, 4                   @ calcula direccion del ultimo elemento del vector
     sub r1, #1764               @ resta antes de iterar los 882 palabras
     mov r4, 0
-    movw r2, #1762               @
+    movw r2, #1762              @
     sub r5, r0, r2              @ posicion del eco que se asigna a la muestra final
     .loop_echo_sind:       
         ldr r2, [r0]            @ Toma el valor del vector de entrada
